@@ -1,7 +1,4 @@
 ﻿using AbpDaprActor.Localization;
-using Volo.Abp.Identity.Web.Navigation;
-using Volo.Abp.SettingManagement.Web.Navigation;
-using Volo.Abp.TenantManagement.Web.Navigation;
 using Volo.Abp.UI.Navigation;
 
 namespace AbpDaprActor.Menus;
@@ -31,15 +28,6 @@ public class AbpDaprActorMenuContributor : IMenuContributor
                 order: 0
             )
         );
-
-        if (AbpDaprActorModule.IsMultiTenant)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
 
         return Task.CompletedTask;
     }

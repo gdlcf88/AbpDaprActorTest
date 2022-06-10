@@ -1,10 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
-using AbpDaprActor.Data;
 using AbpDaprActor.Localization;
 using AbpDaprActor.Menus;
 using Volo.Abp;
-using Volo.Abp.Account;
-using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Authentication.JwtBearer;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
@@ -13,33 +10,15 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
-using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.SqlServer;
-using Volo.Abp.FeatureManagement;
-using Volo.Abp.FeatureManagement.EntityFrameworkCore;
-using Volo.Abp.Identity;
-using Volo.Abp.Identity.EntityFrameworkCore;
-using Volo.Abp.Identity.Web;
-using Volo.Abp.IdentityServer.EntityFrameworkCore;
 using Volo.Abp.Localization;
 using Volo.Abp.Localization.ExceptionHandling;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.PermissionManagement;
-using Volo.Abp.PermissionManagement.EntityFrameworkCore;
-using Volo.Abp.PermissionManagement.HttpApi;
-using Volo.Abp.PermissionManagement.Identity;
-using Volo.Abp.PermissionManagement.IdentityServer;
-using Volo.Abp.SettingManagement;
-using Volo.Abp.SettingManagement.EntityFrameworkCore;
-using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Swashbuckle;
-using Volo.Abp.TenantManagement;
-using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
@@ -56,47 +35,7 @@ namespace AbpDaprActor;
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreAuthenticationJwtBearerModule),
     typeof(AbpAspNetCoreSerilogModule),
-    typeof(AbpAspNetCoreMvcUiBasicThemeModule),
-
-    // Account module packages
-    typeof(AbpAccountApplicationModule),
-    typeof(AbpAccountHttpApiModule),
-    typeof(AbpAccountWebIdentityServerModule),
-
-    // Identity module packages
-    typeof(AbpPermissionManagementDomainIdentityModule),
-    typeof(AbpPermissionManagementDomainIdentityServerModule),
-    typeof(AbpIdentityApplicationModule),
-    typeof(AbpIdentityHttpApiModule),
-    typeof(AbpIdentityEntityFrameworkCoreModule),
-    typeof(AbpIdentityServerEntityFrameworkCoreModule),
-    typeof(AbpIdentityWebModule),
-
-    // Audit logging module packages
-    typeof(AbpAuditLoggingEntityFrameworkCoreModule),
-
-    // Permission Management module packages
-    typeof(AbpPermissionManagementApplicationModule),
-    typeof(AbpPermissionManagementHttpApiModule),
-    typeof(AbpPermissionManagementEntityFrameworkCoreModule),
-
-    // Tenant Management module packages
-    typeof(AbpTenantManagementApplicationModule),
-    typeof(AbpTenantManagementHttpApiModule),
-    typeof(AbpTenantManagementEntityFrameworkCoreModule),
-    typeof(AbpTenantManagementWebModule),
-
-    // Feature Management module packages
-    typeof(AbpFeatureManagementApplicationModule),
-    typeof(AbpFeatureManagementEntityFrameworkCoreModule),
-    typeof(AbpFeatureManagementHttpApiModule),
-    typeof(AbpFeatureManagementWebModule),
-
-    // Setting Management module packages
-    typeof(AbpSettingManagementApplicationModule),
-    typeof(AbpSettingManagementEntityFrameworkCoreModule),
-    typeof(AbpSettingManagementHttpApiModule),
-    typeof(AbpSettingManagementWebModule)
+    typeof(AbpAspNetCoreMvcUiBasicThemeModule)
 )]
 public class AbpDaprActorModule : AbpModule
 {
@@ -128,7 +67,6 @@ public class AbpDaprActorModule : AbpModule
         ConfigureVirtualFiles(hostingEnvironment);
         ConfigureLocalization();
         ConfigureAuthentication(context.Services, configuration);
-        ConfigureEfCore(context);
         
         context.Services.AddActors(options =>
         {
@@ -280,26 +218,6 @@ public class AbpDaprActorModule : AbpModule
         });
     }
 
-    private void ConfigureEfCore(ServiceConfigurationContext context)
-    {
-        context.Services.AddAbpDbContext<AbpDaprActorDbContext>(options =>
-        {
-            /* You can remove "includeAllEntities: true" to create
-             * default repositories only for aggregate roots
-             * Documentation: https://docs.abp.io/en/abp/latest/Entity-Framework-Core#add-default-repositories
-             */
-            options.AddDefaultRepositories(includeAllEntities: true);
-        });
-
-        Configure<AbpDbContextOptions>(options =>
-        {
-            options.Configure(configurationContext =>
-            {
-                configurationContext.UseSqlServer();
-            });
-        });
-    }
-
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var app = context.GetApplicationBuilder();
@@ -337,7 +255,6 @@ public class AbpDaprActorModule : AbpModule
         }
 
         app.UseUnitOfWork();
-        app.UseIdentityServer();
         app.UseAuthorization();
 
         app.UseSwagger();

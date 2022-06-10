@@ -1,5 +1,3 @@
-using System;
-using AbpDaprActor.Data;
 using Serilog;
 using Serilog.Events;
 
@@ -43,12 +41,6 @@ public class Program
             await builder.AddApplicationAsync<AbpDaprActorModule>();
             var app = builder.Build();
             await app.InitializeApplicationAsync();
-
-            if (IsMigrateDatabase(args))
-            {
-                await app.Services.GetRequiredService<AbpDaprActorDbMigrationService>().MigrateAsync();
-                return 0;
-            }
 
             Log.Information("Starting AbpDaprActor.");
             await app.RunAsync();
