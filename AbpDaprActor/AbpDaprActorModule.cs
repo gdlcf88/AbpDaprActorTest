@@ -84,6 +84,7 @@ public class AbpDaprActorModule : AbpModule
         });
         
         context.Services.AddGrpc();
+        context.Services.AddDaprClient();
     }
 
     private void ConfigureMultiTenancy()
