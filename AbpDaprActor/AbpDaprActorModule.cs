@@ -82,8 +82,6 @@ public class AbpDaprActorModule : AbpModule
                 ctx.Endpoints.MapActorsHandlers();
             });
         });
-        
-        context.Services.AddGrpc();
     }
 
     private void ConfigureMultiTenancy()
